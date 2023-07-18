@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title><%= title %></title>
+        <link rel="stylesheet" type="text/css" href="/styles/title-tag-style.css">
+    </head>
+    <body>
+        <h1><%= title %></h1>
+        <div class="tool-form">
+            <select id="language" class="form-input">
+                <option value="" selected disabled>Select language</option>
+                <% languages.forEach(language => { %>
+                    <option value="<%= language['1'] %>"><%= language.name %></option>
+                <% }); %>
+            </select>
+            <input type="text" id="title-input" class="form-input" placeholder="Enter title" />
+            <button id="submit-button" class="form-button">Submit</button>
+            <textarea id="output-text" class="form-output" readonly></textarea>
+        </div>
+        <button onclick="location.href='/'" class="back-button">Back</button>
+    </body>
+</html>

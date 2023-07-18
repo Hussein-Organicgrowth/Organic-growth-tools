@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+    <title>Organic Growth Værktøjer</title>
+</head>
+<body>
+    <h1>Organic Growth Værktøjer</h1>
+    <h3>Her vil du finde en liste over af værktøjerne vi bruger hos organic growth</h3>
+    <div class="tools">
+        <% tools.forEach(function(tool) { %>
+            <div class="tool">
+                <h2><%= tool.name %></h2>
+                <p><%= tool.description %></p>
+                <button onclick="window.location.href='<%= tool.link %>'">
+                    Brug værktøj
+                </button>
+            </div>
+        <% }); %>
+    </div>
+</body>
+</html>

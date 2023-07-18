@@ -1,0 +1,59 @@
+body {
+    background-color: #F3F3F3;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    color: #C8CEC8
+}
+
+h1 {
+    color: #333;
+}
+
+.tools {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.tool {
+    background-color: #3E503C;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: calc(33% - 20px);
+    margin-bottom: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.tool:hover {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+}
+
+h1 {
+    color: #333;
+    text-align: center; /* Add this line to center the h1 title */
+}
+
+h3 {
+    color: #333;
+    text-align: center;
+}
+
+button {
+    background-color: #333;
+    color: #FFF;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 2px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background-color: #555;
+}
