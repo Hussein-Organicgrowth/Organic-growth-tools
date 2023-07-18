@@ -1,5 +1,9 @@
+
+require('dotenv').config();
 const API_URL = "https://api.openai.com/v1/chat/completions";
-const API_KEY = "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";
+const API_KEY = process.env.OPENAI_API_KEY;
+
+
 
 const keywords = document.getElementById("title-input");
 const lang = document.getElementById("language");
@@ -66,7 +70,7 @@ const generate = async () => {
             console.log(line);  // add this line
             return line;
           }); // Parse the JSON string
-      console.log("PARSEDLINE: " + parsedLines);
+      
       if(parsedLines == ""){
         textArea.value += '\n';
       }
