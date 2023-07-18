@@ -1,11 +1,24 @@
 {
-  "name": "og-tools",
+  "name": "organic-growth-tool",
   "version": "1.0.0",
-  "description": "a list of organic growth tools",
+  "description": "Is a project that creates tools",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "tool",
+    "growth",
+    "organic"
+  ],
   "author": "Hussein Ali",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "openai": "^3.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
 }
