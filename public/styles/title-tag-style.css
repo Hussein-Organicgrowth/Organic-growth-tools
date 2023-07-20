@@ -40,11 +40,12 @@ body {
 
 .form-output {
     width: 100%;
-    min-height: 100px;
+    min-height: 200px !important; /* Increase minimum height */
     padding: 1em;
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 1.2em !important; /* Increase font size */
 }
 
 .back-button {
@@ -60,3 +61,22 @@ body {
 .back-button:hover {
     background-color: #5a6268;
 }
+
+.prompt-card {
+    margin: 2em auto;
+    padding: 1em;
+    width: 80%;
+    max-width: 600px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prompt-card h2 {
+    margin-bottom: 0.5em;
+}
+
+.prompt-card p {
+    margin-left: 1em;
+}
+

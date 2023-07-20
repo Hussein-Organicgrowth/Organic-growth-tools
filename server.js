@@ -1,9 +1,93 @@
 const express = require('express');
+require('dotenv').config();
 const app = express();
+app.use(express.json());
+
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/public'));  // to serve static files
 app.set('view engine', 'ejs');  // setting up the view engine
+const API_URL = "https://api.openai.com/v1/chat/completions";
+const API_KEY = process.env.OPENAI_API_KEY;
+const axios = require('axios');
+const cheerio = require('cheerio');
+
+// Server-side code
+
+const fetch = require('node-fetch');
+
+
+
+app.use(express.json());
+
+app.post('/process-text', async (req, res) => {
+  try {
+    const { titlePrompt, prompt } = req.body;
+
+    // Fetch the response from the OpenAI API
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [{ role: 'system', content: titlePrompt }, { role: 'user', content: prompt }],
+        max_tokens: 5000,
+        stream: true, // Enable streaming response
+      }),
+    });
+
+    // Set response headers for streaming
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Transfer-Encoding', 'chunked');
+
+    // Stream the response from the OpenAI API to the client
+    response.body.pipe(res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+
+
+app.get('/scrape', async (req, res) => {
+  const url = req.query.url;
+
+  try {
+    const response = await axios.get(url);
+    const html = response.data;
+
+    // Parse the HTML using Cheerio
+    const $ = cheerio.load(html);
+
+    // Extract the desired content using selectors
+    const content = $('body').text();
+    res.send(content);
+  } catch (error) {
+    console.error('Error scraping website:', error);
+    res.status(500).send('An error occurred');
+  }
+});
+
+const scrapeWebsite = async () => {
+  try {
+    const url = document.getElementById('urlInput').value;
+    const response = await axios.get(`/scrape?url=${encodeURIComponent(url)}`);
+    const content = response.data;
+    document.getElementById('content').textContent = content;
+  } catch (error) {
+    console.error('Error scraping website:', error);
+  }
+};
+
+
+
+
+
+  
 
 const tools = [
     { name: 'Title tag værktøj', description: 'Hjælper dig med title tags', link: '/title-tag-tool' },

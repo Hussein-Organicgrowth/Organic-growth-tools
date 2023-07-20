@@ -11,14 +11,19 @@
         <h1><%= title %></h1>
         <div class="tool-form">
             <select id="language" class="form-input">
-                <option value="" selected disabled>Select language</option>
+                <option value="" selected disabled>Vælg Sprog</option>
                 <% languages.forEach(language => { %>
                     <option value="<%= language['1'] %>"><%= language.name %></option>
                 <% }); %>
             </select>
             <input type="text" id="title-input" class="form-input" placeholder="søgeord 1, søgeord 2, søgeord 3" />
             <button id="submit-button" class="form-button">Submit</button>
-            <textarea id="output-text" class="form-output" readonly></textarea>
+            <textarea id="output-text" class="form-output"></textarea>
+        </div>
+       
+        <div class="prompt-card">
+            <h2>Prompt brugt:</h2>
+            <p id="prompt-text">As a title tag expert with comprehensive SEO knowledge, your task is to create three title tags using 2 or 3 {lang} keywords provided, separated by commas. Follow this format: [Primary keyword] - [remaining title tag]. Ensure the title tags do not exceed 65 characters in length and are descriptive. Each title tag must include a call to action. The primary keyword holds the highest priority. The title tags should be in the following language {lang} provided with an english translation.</p>
         </div>
         <button onclick="location.href='/'" class="back-button">Back</button>
         <script src="/js/title-tag.js"></script>
