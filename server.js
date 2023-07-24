@@ -91,7 +91,7 @@ const scrapeWebsite = async () => {
 
 const tools = [
     { name: 'Title tag værktøj', description: 'Hjælper dig med title tags', link: '/title-tag-tool' },
-    { name: 'Meta beskrivelser', description: 'Hjælper dig med at lave meta beskrivelser', link: 'http://tool2.com' },
+    { name: 'Meta beskrivelser', description: 'Hjælper dig med at lave meta beskrivelser', link: '/meta-beskrivelse-tool' },
     { name: 'Forslag til blogindlæg', description: 'Hjælper dig med at komme med blogemner', link: 'http://tool3.com' },
     { name: 'Opdeling af søgeord', description: 'Hjælper dig med at opdele søgeord', link: 'http://tool3.com' },
     { name: 'Forslag af indholdsemner til søgeordsgruppe.', description: 'Hjælper dig med at opdele søgeord', link: 'http://tool3.com' },
@@ -113,6 +113,10 @@ const langs = require('langs');
 
 app.get('/title-tag-tool', (req, res) => {
     res.render('title-tag-tool', { title: 'Title tag værktøj', languages: langs.all() });
+});
+
+app.get('/meta-beskrivelse-tool', (req, res) => {
+  res.render('meta-beskrivelse-tool', {title: 'Meta beskrivelse værktøj'});
 });
 
 app.listen(PORT, () => {

@@ -1,31 +1,56 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title><%= title %></title>
-        <link rel="stylesheet" type="text/css" href="/styles/title-tag-style.css">
-        
-    </head>
-    <body>
-        
-        <h1><%= title %></h1>
-        <div class="tool-form">
-            <select id="language" class="form-input">
-                <option value="" selected disabled>Vælg Sprog</option>
-                <% languages.forEach(language => { %>
-                    <option value="<%= language['1'] %>"><%= language.name %></option>
-                <% }); %>
-            </select>
-            <input type="text" id="title-input" class="form-input" placeholder="søgeord 1, søgeord 2, søgeord 3" />
-            <button id="submit-button" class="form-button">Submit</button>
-            <textarea id="output-text" class="form-output"></textarea>
-        </div>
-       
-        <div class="prompt-card">
-            <h2>Prompt brugt:</h2>
-            <p id="prompt-text">As a title tag expert with comprehensive SEO knowledge, your task is to create three title tags using 2 or 3 {lang} keywords provided, separated by commas. Follow this format: [Primary keyword] - [remaining title tag]. Ensure the title tags do not exceed 65 characters in length and are descriptive. Each title tag must include a call to action. The primary keyword holds the highest priority. The title tags should be in the following language {lang} provided with an english translation.</p>
-        </div>
-        <button onclick="location.href='/'" class="back-button">Back</button>
-        <script src="/js/title-tag.js"></script>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <title><%= title %></title>
+    <link rel="stylesheet" type="text/css" href="/styles/title-tag-style.css" />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <div class="tool-form">
+      <select id="language" class="form-input">
+        <option value="" selected disabled>Vælg Sprog</option>
+        <% languages.forEach(language => { %>
+        <option value="<%= language['1'] %>"><%= language.name %></option>
+        <% }); %>
+      </select>
+      <input
+        type="text"
+        id="title-input"
+        class="form-input"
+        placeholder="søgeord 1, søgeord 2, søgeord 3" />
+      <button id="submit-button" class="form-button">Submit</button>
+      <textarea id="output-text" class="form-output"></textarea>
+    </div>
+
+    <div class="prompt-card">
+      <h2>Brug den samme prompt her:</h2>
+      <p id="prompt-text">
+        Envision yourself as a seasoned SEO specialist with a specific expertise
+        in creating title tags. Your mission is to generate three unique title
+        tags, each incorporating 2 or 3 keywords in the specified language
+        {lang}. You will be asked to provide these keywords, separated by
+        commas, after this prompt. The format to follow is: [Primary keyword] -
+        [Secondary keyword(s) / Descriptive Phrase]. Keep in mind that the total
+        character count of each title tag should not exceed the strict limit of
+        70 characters, inclusive of all letters, spaces and punctuation marks.
+        Here are your guidelines: Each title tag must be concise yet
+        descriptive, accurately signifying the content of the corresponding
+        webpage. Always place the primary keyword at the beginning of the title
+        tag as it holds the highest significance for SEO purposes. Include a
+        persuasive call to action in each title tag to compel potential visitors
+        to click on the website link in search engine results. Construct all
+        title tags in the language {lang}, but remember to provide corresponding
+        English translations for each. Now, please provide the {lang} keywords.
+        Following that, you'll craft three SEO-optimized title tags that
+        strictly adhere to the 70-character limit. Your aim is to balance
+        keyword usage with engaging language to encourage click-through from
+        potential visitors. Remember, an effective title tag can significantly
+        improve a webpage's visibility and click-through rates on search engine
+        results pages.
+      </p>
+    </div>
+    <button onclick="location.href='/'" class="back-button">Back</button>
+    <script src="/js/title-tag.js"></script>
+  </body>
 </html>
