@@ -8,6 +8,16 @@ const generate = async () => {
   textArea.value = "";
   // Alert the user if no prompt value
 
+  if (keywords.value == "") {
+    alert("Du skal skrive keywords ind før du kan generere dine title tags.");
+    return;
+  }
+
+  if (lang.value == "") {
+    alert("Du skal vælge et sprog før du kan generere dine title tags.");
+    return;
+  }
+
   let prompt = keywords.value.trim();
   console.log("KEYWORDS: " + prompt);
   // Disable the generate button and enable the stop button
