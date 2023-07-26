@@ -1,23 +1,87 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Meta Beskrivelse Tool</title>
-        <link rel="stylesheet" type="text/css" href="/styles/meta-beskrivelse-style.css">
-    </head>
-    <body>
-        <div class="container">
-            <div class="info-panel">
-                <h1>Meta Beskrivelse Tool</h1>
-                <p>Information about this tool goes here.</p>
-            </div>
-            <div class="tool-form-container">
-                <form class="tool-form">
-                    <input type="text" id="description-input" class="form-input" placeholder="Enter your description here" />
-                    <button id="submit-button" class="form-button">Submit</button>
-                    <textarea id="output-text" class="form-output" readonly></textarea>
-                </form>
-            </div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Meta Beskrivelse Tool</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/styles/meta-beskrivelse-style.css" />
+  </head>
+  <body>
+    <div class="grid-container">
+      <div class="left-box">
+        <button onclick="location.href='/'" class="back-button">
+          Gå tilbage
+        </button>
+        <p>Hvordan virker værktøjetet?</p>
+        <p>
+          Vælg først det sprog din meta Beskrivelse skal være på. Du skal enten
+          indtaste din tekst eller en url hvor meta Beskrivelsen skal stå på.
+        </p>
+        <div id="textContainer">
+          <div id="partialText" class="card">
+            <!-- Display a portion of the text here -->
+            Brug den samme prompt her
+          </div>
+          <button id="showMoreButton" onclick="toggleFullText()" class="button">
+            Vis prompt
+          </button>
+          <div id="fullText" class="card" style="display: none">
+            <!-- Display the full text here -->
+            Imagine yourself as a bilingual digital marketing expert who
+            specializes in SEO, fluent in both English and the target language.
+            Your task is to create a compelling meta description for a website
+            in the specified language [insert target language] using the
+            provided text. This meta description will play a vital role in
+            attracting potential visitors from search engine results and
+            providing them with a brief but informative overview of the
+            website's content. Consider the following while creating your meta
+            description: Keep it between 150-160 characters as this is typically
+            the length that search engines display. Make sure it accurately
+            summarizes the content found on the page. Incorporate relevant
+            keywords from the provided text without overstuffing. Make it
+            enticing to encourage users to click on the website link in the
+            search results. Now, using the text provided here [text], craft a
+            compelling, concise, and SEO-friendly meta description for the
+            website in the specified language. This text is taken directly from
+            the website and will be placed on that same site. As such, it's
+            essential that your meta description aligns well with the overall
+            content and purpose of the website. Remember, a great meta
+            description can significantly enhance the visibility and
+            click-through rates of a website on search engine results pages, so
+            take your time to craft it carefully and thoughtfully.
+          </div>
         </div>
-    </body>
+      </div>
+      <div class="right-box">
+        <h1>Meta Beskrivelse Tool</h1>
+        <form class="form-container">
+          <select id="language" class="form-input">
+            <option value="" selected disabled>Vælg Sprog</option>
+            <% languages.forEach(language => { %>
+            <option value="<%= language['1'] %>"><%= language.name %></option>
+            <% }); %>
+          </select>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Tekst eller url"
+            required />
+          <button type="submit">Submit</button>
+          <br />
+
+          <textarea
+            id="message"
+            name="message"
+            placeholder="Dit output"
+            required></textarea>
+        </form>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="/js/meta-beskrivelse.js"></script>
+  </body>
 </html>
