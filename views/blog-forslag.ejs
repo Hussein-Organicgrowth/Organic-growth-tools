@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Blog forslag værktøj</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/styles/blog-forslag-style.css"
+    />
+  </head>
+  <body>
+    <div class="grid-container">
+      <div class="left-box">
+        <button onclick="location.href='/'" class="back-button">
+          Gå tilbage
+        </button>
+        <h2>Hvordan virker værktøjetet?</h2>
+        <p>
+          Vælg først det sprog din meta Beskrivelse skal være på. Du skal enten
+          indtaste din tekst eller en url hvor meta Beskrivelsen skal stå på.
+        </p>
+        <p>Den skriver i mellem 150-200 characters.</p>
+        <div id="textContainer">
+          <div id="partialText" class="card">
+            <!-- Display a portion of the text here -->
+            Brug den samme prompt her
+          </div>
+          <button id="showMoreButton" onclick="toggleFullText()" class="button">
+            Vis prompt
+          </button>
+          <div id="fullText" class="card" style="display: none">
+            <!-- Display the full text here -->
+            Imagine yourself as an experienced content strategist and SEO
+            specialist. Your task is to create an in-depth blog post outline.
+            You will be asked to provide the specific topic and keywords for
+            this outline after this prompt. The outline should detail the main
+            points and subpoints, ensuring they flow logically to guide readers
+            through the topic smoothly. Here are your key considerations: Begin
+            with a captivating introduction that explains the topic and its
+            relevance to your audience, and why they should be interested. Break
+            down the main body into distinct sections, each with a clear
+            heading. You will be asked to incorporate relevant keywords tied to
+            the topic into these headings to optimize for search engine
+            visibility. Ensure the headings follow a logical sequence and
+            highlight the progression of thoughts. Specify the subpoints or
+            particular arguments that will be discussed within each section.
+            Consider including relevant case studies, anecdotes, or data points
+            as part of your points where applicable. Plan a summarizing
+            conclusion that revisits the key takeaways, and consider posing a
+            question or a call-to-action for your readers. If necessary, provide
+            a list of resources or references that will be mentioned in the blog
+            post. After this prompt, please provide the specific topic and
+            keywords. With these, you will create an engaging, structured, and
+            detailed blog post outline, incorporating SEO practices. Remember, a
+            well-planned outline serves as the foundation for a successful blog
+            post, aiding in delivering a clear, concise, and captivating
+            narrative.
+          </div>
+        </div>
+      </div>
+      <div class="right-box">
+        <h1>Forslag til blogs</h1>
+        <form class="form-container">
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Skriv dit emne"
+            required
+          />
+          <input
+            type="text"
+            id="keywords"
+            name="name"
+            placeholder="Skriv dine keywords du skal ramme"
+            required
+          />
+          <button id="submit-button">Submit</button>
+          <br />
+
+          <textarea
+            id="dit-output"
+            name="message"
+            placeholder="Dit output"
+          ></textarea>
+        </form>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="/js/meta-beskrivelse.js"></script>
+  </body>
+</html>

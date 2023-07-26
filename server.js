@@ -97,7 +97,7 @@ const tools = [
   {
     name: "Forslag til blogindlæg",
     description: "Hjælper dig med at komme med blogemner",
-    link: "http://tool3.com",
+    link: "/blog-forslag",
   },
   {
     name: "Opdeling af søgeord",
@@ -167,6 +167,13 @@ app.get("/title-tag-tool", (req, res) => {
 app.get("/meta-beskrivelse-tool", (req, res) => {
   res.render("meta-beskrivelse-tool", {
     title: "Meta beskrivelse værktøj",
+    languages: langs.all(),
+  });
+});
+
+app.get("/blog-forslag", (req, res) => {
+  res.render("blog-forslag", {
+    title: "Blog forslag værktøj",
     languages: langs.all(),
   });
 });

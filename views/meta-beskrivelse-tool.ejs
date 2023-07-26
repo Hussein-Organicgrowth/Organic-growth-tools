@@ -6,7 +6,8 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="/styles/meta-beskrivelse-style.css" />
+      href="/styles/meta-beskrivelse-style.css"
+    />
   </head>
   <body>
     <div class="grid-container">
@@ -14,11 +15,12 @@
         <button onclick="location.href='/'" class="back-button">
           Gå tilbage
         </button>
-        <p>Hvordan virker værktøjetet?</p>
+        <h2>Hvordan virker værktøjetet?</h2>
         <p>
           Vælg først det sprog din meta Beskrivelse skal være på. Du skal enten
           indtaste din tekst eller en url hvor meta Beskrivelsen skal stå på.
         </p>
+        <p>Den skriver i mellem 150-200 characters.</p>
         <div id="textContainer">
           <div id="partialText" class="card">
             <!-- Display a portion of the text here -->
@@ -68,15 +70,16 @@
             id="name"
             name="name"
             placeholder="Tekst eller url"
-            required />
-          <button type="submit">Submit</button>
+            required
+          />
+          <button id="submit-button">Submit</button>
           <br />
 
           <textarea
-            id="message"
+            id="dit-output"
             name="message"
             placeholder="Dit output"
-            required></textarea>
+          ></textarea>
         </form>
       </div>
     </div>
