@@ -1,0 +1,139 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100vh;
+  }
+  
+  .left-box {
+    background-color: #3E503C;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    padding: 20px;
+  }
+  
+  .back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #3E503C;
+    cursor: pointer;
+  }
+  
+  .right-box {
+    background-color: #F8F5ED;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .right-box h1 {
+    margin-bottom: 20px;
+  }
+  
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    max-width: 500px;
+  }
+  
+  .form-container input {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .form-container textarea {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    height: 250px; /* specify your desired height here */
+  }
+  
+  .form-container button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3E503C;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  /* Responsive design for smaller devices */
+  @media screen and (max-width: 600px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+  }
+  
+  .prompt-card {
+    margin: 2em auto;
+    padding: 1em;
+    width: 80%;
+    max-width: 600px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .prompt-card h2 {
+    margin-bottom: 0.5em;
+  }
+  
+  .prompt-card p {
+    margin-left: 1em;
+  }
+  
+  #showMoreButton {
+    margin-top: 10px;
+  }
+  
+  #fullText {
+    display: none;
+    margin-top: 10px;
+  }
+  
+  .card {
+    background-color: #F8F5ED;
+    padding: 10px;
+    color: #474747;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+  .button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  

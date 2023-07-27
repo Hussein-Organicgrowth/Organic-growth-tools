@@ -102,7 +102,7 @@ const tools = [
   {
     name: "Opdeling af søgeord",
     description: "Hjælper dig med at opdele søgeord",
-    link: "http://tool3.com",
+    link: "/opdel-keyword",
   },
   {
     name: "Forslag af indholdsemner til søgeordsgruppe.",
@@ -174,6 +174,13 @@ app.get("/meta-beskrivelse-tool", (req, res) => {
 app.get("/blog-forslag", (req, res) => {
   res.render("blog-forslag", {
     title: "Blog forslag værktøj",
+    languages: langs.all(),
+  });
+});
+
+app.get("/opdel-keyword", (req, res) => {
+  res.render("opdel-keyword", {
+    title: "Opdeling af søgeord værktøj",
     languages: langs.all(),
   });
 });
