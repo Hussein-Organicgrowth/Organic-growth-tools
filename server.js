@@ -105,11 +105,6 @@ const tools = [
     link: "/opdel-keyword",
   },
   {
-    name: "Forslag af indholdsemner til søgeordsgruppe.",
-    description: "Hjælper dig med at opdele søgeord",
-    link: "http://tool3.com",
-  },
-  {
     name: "Definer købsfase eller søgeintention",
     description: "Hjælper dig med at opdele søgeord",
     link: "http://tool3.com",
