@@ -6,9 +6,26 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="/styles/blog-forslag-style.css"
-    />
+      href="/styles/blog-forslag-style.css" />
   </head>
+  <style>
+    .text-container {
+      padding: 20px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+    }
+
+    .text-container h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .text-container p {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+  </style>
   <body>
     <div class="grid-container">
       <div class="left-box">
@@ -17,10 +34,11 @@
         </button>
         <h2>Hvordan virker værktøjetet?</h2>
         <p>
-          Vælg først det sprog din meta Beskrivelse skal være på. Du skal enten
-          indtaste din tekst eller en url hvor meta Beskrivelsen skal stå på.
+          Skriv først dit emne Herefter skal du skrive dine søgeord. Dine
+          søgeord skal ligne søgeord 1, søgeord 2, søgeord 3. Komma for hver
+          søgeord.
         </p>
-        <p>Den skriver i mellem 150-200 characters.</p>
+        <p>Sig endelig til hvis i ikke får det resultat i ønsker</p>
         <div id="textContainer">
           <div id="partialText" class="card">
             <!-- Display a portion of the text here -->
@@ -67,28 +85,24 @@
             id="name"
             name="name"
             placeholder="Skriv dit emne"
-            required
-          />
+            required />
           <input
             type="text"
             id="keywords"
             name="name"
             placeholder="Skriv dine keywords du skal ramme"
-            required
-          />
+            required />
           <button id="submit-button">Submit</button>
           <br />
 
           <textarea
             id="dit-output"
             name="message"
-            placeholder="Dit output"
-          ></textarea>
+            placeholder="Dit output"></textarea>
         </form>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <script src="/js/meta-beskrivelse.js"></script>
+    <script src="/js/blog-forslag.js"></script>
   </body>
 </html>
