@@ -32,7 +32,8 @@ async function generate(keywords) {
     "The categories should be named in Danish, reflecting the overall theme of the keywords within. " +
     "Prioritize logical organization over the quantity of categories. It's better to have a few well-structured categories than numerous disorganized ones. " +
     "When in doubt, consider the possible search queries a user might input when looking for the kind of content or services the keywords are targeting. " +
-    "After this prompt, you will be asked to provide the specific Danish keywords. With these keywords in hand, start organizing them into well-defined, relevant categories. This activity will not only enhance the SEO strategy but will also contribute to a more targeted and effective digital marketing campaign.";
+    "After this prompt, you will be asked to provide the specific Danish keywords. With these keywords in hand, start organizing them into well-defined, relevant categories. This activity will not only enhance the SEO strategy but will also contribute to a more targeted and effective digital marketing campaign. " +
+    "ALWAYS FOLLOW THIS FORMAT. Category:keywords";
   try {
     // Fetch the response from the OpenAI API with the signal from AbortController
     const response = await fetch("/process-text", {
@@ -98,6 +99,85 @@ async function generate(keywords) {
     // Enable the generate button and disable the stop button
     controller = null; // Reset the AbortController instance
   }
+}
+const testButton = document.getElementById("test");
+
+testButton.addEventListener("click", async function (event) {
+  event.preventDefault();
+  test(textArea.value);
+});
+
+function test(text) {
+  const map = new Map();
+
+  const sections = text.split("\n\n");
+  sections.forEach((section) => {
+    const lines = section.split("\n");
+    const kategoriLine = lines.find((line) => line.startsWith("Kategori:"));
+    const soegordLine = lines.find((line) => line.startsWith("søgeord:"));
+
+    if (kategoriLine && soegordLine) {
+      const kategori = kategoriLine.slice(10).trim();
+      const soegord = soegordLine.slice(9).trim().split(", ");
+      map.set(kategori, soegord);
+    }
+  });
+
+  console.log(map);
+
+  // Define the data from the Map
+  const data = Array.from(map.entries());
+
+  // Extract unique categories and keywords
+  const categories = Array.from(new Set(data.map(([kategori]) => kategori)));
+  const keywordsByCategory = {};
+
+  // Group keywords by category
+  for (const [kategori, soegord] of data) {
+    if (!keywordsByCategory[kategori]) {
+      keywordsByCategory[kategori] = [];
+    }
+    keywordsByCategory[kategori].push(...soegord);
+  }
+
+  // Create the CSV rows
+  const csvRows = [];
+  const maxKeywords = Math.max(
+    ...categories.map((kategori) => keywordsByCategory[kategori].length)
+  );
+
+  // Create the header row with category names
+  const headerRow = categories;
+  csvRows.push(headerRow);
+
+  // Create the keyword rows
+  for (let i = 0; i < maxKeywords; i++) {
+    const keywordRow = categories.map(
+      (kategori) => keywordsByCategory[kategori][i] || ""
+    );
+    csvRows.push(keywordRow);
+  }
+
+  // Convert the data to CSV format
+  const csv = csvRows.map((row) => row.join(",")).join("\n");
+
+  // Create a Blob object with the CSV data and UTF-8 encoding
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+  // Create a temporary URL for the Blob
+  const url = URL.createObjectURL(blob);
+
+  // Create a link element for the download
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "keywords.csv";
+
+  // Append the link to the document body and click it to start the download
+  document.body.appendChild(link);
+  link.click();
+
+  // Clean up the temporary URL
+  URL.revokeObjectURL(url);
 }
 
 function toggleFullText() {
