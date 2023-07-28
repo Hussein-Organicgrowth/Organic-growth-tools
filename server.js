@@ -58,6 +58,8 @@ app.get("/scrape", async (req, res) => {
   try {
     const response = await axios.get(url);
     const html = response.data;
+
+    //Clean all tags from the text
     const cleanedHtml = html
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
       .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
@@ -78,6 +80,7 @@ app.get("/scrape", async (req, res) => {
     // Extract the desired content using selectors
     res.send(content);
   } catch (error) {
+    alert("Der var en fejl med at finde teksten for din url");
     console.error("Error scraping website:", error);
     res.status(500).send("An error occurred");
   }

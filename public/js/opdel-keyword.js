@@ -33,7 +33,7 @@ async function generate(keywords) {
     "Prioritize logical organization over the quantity of categories. It's better to have a few well-structured categories than numerous disorganized ones. " +
     "When in doubt, consider the possible search queries a user might input when looking for the kind of content or services the keywords are targeting. " +
     "After this prompt, you will be asked to provide the specific Danish keywords. With these keywords in hand, start organizing them into well-defined, relevant categories. This activity will not only enhance the SEO strategy but will also contribute to a more targeted and effective digital marketing campaign. " +
-    "ALWAYS FOLLOW THIS FORMAT. Category:keywords";
+    "ALWAYS FOLLOW THIS FORMAT. Category:keywords. The keywords will be split by commas making it an array ALWAYS FOLLOW THIS";
   try {
     // Fetch the response from the OpenAI API with the signal from AbortController
     const response = await fetch("/process-text", {
@@ -74,6 +74,10 @@ async function generate(keywords) {
         if (line.trim()) {
           const jsonLine = line.replace(/^data: /, "").trim();
           console.log("JSONLINE: " + jsonLine);
+          if (jsonLine.includes("[DONE]")) {
+            alert("Du kan nu downloade din csv file");
+            return;
+          }
           try {
             const parsedData = JSON.parse(jsonLine);
             const content = parsedData.choices[0].delta.content;
@@ -111,10 +115,11 @@ function test(text) {
   const map = new Map();
 
   const sections = text.split("\n\n");
+  console.log(sections);
   sections.forEach((section) => {
     const lines = section.split("\n");
-    const kategoriLine = lines.find((line) => line.startsWith("Kategori:"));
-    const soegordLine = lines.find((line) => line.startsWith("søgeord:"));
+    const kategoriLine = lines[0];
+    const soegordLine = lines[1];
 
     if (kategoriLine && soegordLine) {
       const kategori = kategoriLine.slice(10).trim();
