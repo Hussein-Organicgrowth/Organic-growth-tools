@@ -33,7 +33,7 @@ async function generate(keywords) {
     "Prioritize logical organization over the quantity of categories. It's better to have a few well-structured categories than numerous disorganized ones. " +
     "When in doubt, consider the possible search queries a user might input when looking for the kind of content or services the keywords are targeting. " +
     "After this prompt, you will be asked to provide the specific Danish keywords. With these keywords in hand, start organizing them into well-defined, relevant categories. This activity will not only enhance the SEO strategy but will also contribute to a more targeted and effective digital marketing campaign. " +
-    "ALWAYS FOLLOW THIS FORMAT. Category:keywords. The keywords will be split by commas making it an array ALWAYS FOLLOW THIS";
+    "ALWAYS FOLLOW THIS FORMAT. Category:keywords. The keywords will be split by commas making it an array ALWAYS FOLLOW THIS and It will look like this Category:name of the category under that søgeord:. ";
   try {
     // Fetch the response from the OpenAI API with the signal from AbortController
     const response = await fetch("/process-text", {

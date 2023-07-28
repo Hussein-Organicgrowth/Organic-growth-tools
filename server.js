@@ -135,7 +135,7 @@ const tools = [
   {
     name: "URL redirect mapping",
     description: "Hjælper dig med at opdele søgeord",
-    link: "http://tool3.com",
+    link: "/url-redirect",
   },
   {
     name: "Onpage konkurrentanalyse",
@@ -179,6 +179,13 @@ app.get("/blog-forslag", (req, res) => {
 app.get("/opdel-keyword", (req, res) => {
   res.render("opdel-keyword", {
     title: "Opdeling af søgeord værktøj",
+    languages: langs.all(),
+  });
+});
+
+app.get("/url-redirect", (req, res) => {
+  res.render("url-redirect", {
+    title: "url-redirect værktøj",
     languages: langs.all(),
   });
 });

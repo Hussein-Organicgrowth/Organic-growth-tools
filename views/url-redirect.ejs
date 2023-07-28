@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Blog forslag værktøj</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/styles/url-redirect-style.css" />
+  </head>
+  <style>
+    .text-container {
+      padding: 20px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+    }
+
+    .text-container h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .text-container p {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+  </style>
+  <body>
+    <div class="grid-container">
+      <div class="left-box">
+        <button onclick="location.href='/'" class="back-button">
+          Gå tilbage
+        </button>
+        <h2>Hvordan virker værktøjetet?</h2>
+        <p>
+          Indtast dine søgeord. Herefter kan du downloade en csv file. husk at
+          den skal være skrevet færdig før du kan downloade en csv file.
+        </p>
+        <p>Værktøjet tilader kun 1-300 Søgeord. 300 Søgeord MAX</p>
+        <p>Sig endelig til hvis i ikke får det resultat i ønsker</p>
+      </div>
+      <div class="right-box">
+        <h1>Url redirect</h1>
+        <form class="form-container">
+          <textarea
+            id="old"
+            name="old"
+            placeholder="Dine gamle urls her"></textarea>
+          <textarea
+            id="new"
+            name="new"
+            placeholder="Dine nye urler her"></textarea>
+
+          <button id="submit-button">Submit</button>
+          <br />
+
+          <textarea
+            id="dit-output"
+            name="message"
+            placeholder="Dit output"></textarea>
+        </form>
+        <button id="download">Download csv file</button>
+      </div>
+    </div>
+    <script src="/js/url-redirect.js"></script>
+  </body>
+</html>
