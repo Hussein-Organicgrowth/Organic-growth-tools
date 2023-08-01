@@ -9,6 +9,9 @@ app.use(express.static(__dirname + "/public")); // to serve static files
 app.set("view engine", "ejs"); // setting up the view engine
 const API_URL = "https://api.openai.com/v1/chat/completions";
 const API_KEY = process.env.OPENAI_API_KEY;
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const CX_KEY = process.env.CX_KEY;
+
 const axios = require("axios");
 const cheerio = require("cheerio");
 
@@ -85,6 +88,74 @@ app.get("/scrape", async (req, res) => {
     res.status(500).send("An error occurred");
   }
 });
+
+async function search(keyword) {
+  try {
+    // Search Google to get the competition URLs
+    const competitorUrls = await searchGoogle(keyword);
+
+    const competitionData = [];
+
+    for (const url of competitorUrls) {
+      // Scrape the competition URL to extract the values
+      const data = await scrapeCompetition(url);
+
+      // Push the competition data to the array
+      competitionData.push(data);
+    }
+
+    // ... do something with the competition data (e.g., display it to the user)
+    console.log(competitionData);
+  } catch (error) {
+    // Handle any errors that occur during the search and scraping process
+    console.error("Error:", error);
+    // ... handle the error appropriately
+  }
+}
+
+// Usage
+const keyword = "your_keyword";
+search(keyword);
+
+async function scrapeCompetition(url) {
+  try {
+    // Make a request to the competition URL
+    const response = await axios.get(url);
+
+    // Load the HTML content into cheerio
+    const $ = cheerio.load(response.data);
+
+    // Extract the values you need using CSS selectors
+    const statusCode = response.status;
+    const title = $("title").text();
+    const description = $('meta[name="description"]').attr("content");
+    const h1 = $("h1").text();
+    const h2Count = $("h2").length;
+    const h3Count = $("h3").length;
+    const robots = $('meta[name="robots"]').attr("content");
+    const canonical = $('link[rel="canonical"]').attr("href");
+    const wordCount = $("body").text().split(/\s+/).length;
+    // ... and so on for the other values you need
+
+    // Return the extracted values
+    return {
+      statusCode,
+      title,
+      description,
+      h1,
+      h2Count,
+      h3Count,
+      robots,
+      canonical,
+      wordCount,
+      // ... and so on for the other values
+    };
+  } catch (error) {
+    // Handle any errors that occur during the scraping process
+    console.error("Error:", error);
+    throw new Error("Failed to scrape competition");
+  }
+}
 
 const tools = [
   {
@@ -188,6 +259,34 @@ app.get("/url-redirect", (req, res) => {
     title: "url-redirect værktøj",
     languages: langs.all(),
   });
+});
+
+app.get("/search", async (req, res) => {
+  try {
+    const query = req.query.q;
+    const url = `https://www.googleapis.com/customsearch/v1`;
+    const params = {
+      key: GOOGLE_API_KEY,
+      cx: CX_KEY,
+      q: query,
+    };
+
+    const response = await axios.get(url, { params });
+
+    // Extract the top 4 competitor URLs from the search results
+    const competitorUrls = response.data.items
+      .slice(0, 4)
+      .map((item) => item.link);
+
+    // Call the scrapeCompetition function for each competitor URL
+    const competitorData = await Promise.all(
+      competitorUrls.map((url) => scrapeCompetition(url))
+    );
+
+    res.json(competitorData);
+  } catch (error) {
+    res.json({ error: error.toString() });
+  }
 });
 
 app.listen(PORT, () => {
