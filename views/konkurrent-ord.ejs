@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title><%= title %></title>
+    <link rel="stylesheet" type="text/css" href="/styles/title-tag-style.css" />
+    <style>
+      /* Table styles */
+      #myTable {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      #myTable th,
+      #myTable td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      /* Header styles */
+      #myTable th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+
+      /* Alternate row styles */
+      #myTable tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <div class="tool-form">
+      <input
+        type="text"
+        id="keyword-input"
+        class="form-input"
+        placeholder="Skriv et søgeord her" />
+      <button id="submit-button" class="form-button">Submit</button>
+    </div>
+
+    <button onclick="location.href='/'" class="back-button">Back</button>
+
+    <table id="myTable">
+      <thead>
+        <tr>
+          <th>Placering</th>
+          <th>Url</th>
+          <th>Word Count</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script src="/js/konkurrent-ord.js"></script>
+  </body>
+</html>

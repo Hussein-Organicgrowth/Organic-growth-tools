@@ -105,7 +105,7 @@ async function search(keyword) {
     }
 
     // ... do something with the competition data (e.g., display it to the user)
-    console.log(competitionData);
+    return competitionData;
   } catch (error) {
     // Handle any errors that occur during the search and scraping process
     console.error("Error:", error);
@@ -113,11 +113,7 @@ async function search(keyword) {
   }
 }
 
-// Usage
-const keyword = "your_keyword";
-search(keyword);
-
-async function scrapeCompetition(url) {
+async function scrapeCompetition(url, index) {
   try {
     // Make a request to the competition URL
     const response = await axios.get(url);
@@ -135,11 +131,15 @@ async function scrapeCompetition(url) {
     const robots = $('meta[name="robots"]').attr("content");
     const canonical = $('link[rel="canonical"]').attr("href");
     const wordCount = $("body").text().split(/\s+/).length;
+    const urlText = url;
+    const placering = index;
     // ... and so on for the other values you need
 
     // Return the extracted values
     return {
       statusCode,
+      urlText,
+      placering,
       title,
       description,
       h1,
@@ -216,7 +216,7 @@ const tools = [
   {
     name: "Tekst Konkurrentanalyse",
     description: "Hjælper dig med at opdele søgeord",
-    link: "http://tool3.com",
+    link: "/konkurrent-ord",
   },
 ];
 
@@ -229,6 +229,13 @@ const langs = require("langs");
 app.get("/title-tag-tool", (req, res) => {
   res.render("title-tag-tool", {
     title: "Title tag værktøj",
+    languages: langs.all(),
+  });
+});
+
+app.get("/konkurrent-ord", (req, res) => {
+  res.render("konkurrent-ord", {
+    title: "Konkurrent ord værktøj",
     languages: langs.all(),
   });
 });
@@ -276,11 +283,11 @@ app.get("/search", async (req, res) => {
     // Extract the top 4 competitor URLs from the search results
     const competitorUrls = response.data.items
       .slice(0, 4)
-      .map((item) => item.link);
+      .map((item, index) => ({ url: item.link, index }));
 
     // Call the scrapeCompetition function for each competitor URL
     const competitorData = await Promise.all(
-      competitorUrls.map((url) => scrapeCompetition(url))
+      competitorUrls.map(({ url, index }) => scrapeCompetition(url, index))
     );
 
     res.json(competitorData);
