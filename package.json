@@ -22,12 +22,18 @@
     "ejs": "^3.1.9",
     "env": "^0.0.2",
     "express": "^4.17.1",
+    "google-maps-reviews": "^0.3.0",
+    "google-reviews-web-scraper": "^1.0.2",
     "isomorphic-fetch": "^3.0.0",
+    "jQuery": "^1.7.4",
     "langs": "^2.0.0",
     "node-fetch": "^2.6.6",
-    "openai": "^3.3.0"
+    "openai": "^3.3.0",
+    "puppeteer": "^21.0.3",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.22"
   }
 }

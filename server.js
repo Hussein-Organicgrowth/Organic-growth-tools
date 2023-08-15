@@ -14,6 +14,10 @@ const CX_KEY = process.env.CX_KEY;
 
 const axios = require("axios");
 const cheerio = require("cheerio");
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+
+puppeteer.use(StealthPlugin());
 
 // Server-side code
 
@@ -121,7 +125,27 @@ async function scrapeCompetition(url, index) {
     // Load the HTML content into cheerio
     const $ = cheerio.load(response.data);
 
+    $("script, style").remove();
+    $("*")
+      .contents()
+      .each((index, node) => {
+        if (node.type === "comment") {
+          $(node).remove();
+        }
+      });
+
     // Extract the values you need using CSS selectors
+    let textContent = $("body").text();
+
+    // Normalize whitespace, remove non-breaking spaces and other entities
+    textContent = textContent.replace(/&nbsp;/g, " "); // Convert non-breaking spaces to regular spaces
+    textContent = textContent.replace(/\s+/g, " "); // Convert multiple spaces/newlines/tabs into one space
+    textContent = textContent.replace(/&[a-z]+;/g, ""); // Remove other entities
+    textContent = textContent.trim();
+    const wordCount = textContent
+      .split(" ")
+      .filter((word) => word.length > 0).length;
+
     const statusCode = response.status;
     const title = $("title").text();
     const description = $('meta[name="description"]').attr("content");
@@ -130,7 +154,6 @@ async function scrapeCompetition(url, index) {
     const h3Count = $("h3").length;
     const robots = $('meta[name="robots"]').attr("content");
     const canonical = $('link[rel="canonical"]').attr("href");
-    const wordCount = $("body").text().split(/\s+/).length;
     const urlText = url;
     const placering = index;
     // ... and so on for the other values you need
@@ -199,9 +222,9 @@ const tools = [
     link: "http://tool3.com",
   },
   {
-    name: "Check om liste med links er indexeret",
+    name: "Check om liste med urls er indexeret",
     description: "Hjælper dig med at opdele søgeord",
-    link: "http://tool3.com",
+    link: "/url-indexed-tool",
   },
   {
     name: "URL redirect mapping",
@@ -268,6 +291,13 @@ app.get("/url-redirect", (req, res) => {
   });
 });
 
+app.get("/url-indexed-tool", (req, res) => {
+  res.render("url-indexed-tool", {
+    title: "url-indexed værktøj",
+    languages: langs.all(),
+  });
+});
+
 app.get("/search", async (req, res) => {
   try {
     const query = req.query.q;
@@ -295,7 +325,168 @@ app.get("/search", async (req, res) => {
     res.json({ error: error.toString() });
   }
 });
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
+app.post("/url-index", async (req, res) => {
+  const apiKey = GOOGLE_API_KEY;
+  const cx = CX_KEY;
+
+  // Check if the request has a 'urls' property which should be an array
+  if (!req.body.urls || !Array.isArray(req.body.urls)) {
+    return res
+      .status(400)
+      .json({ error: "Expected a 'urls' array in the request body." });
+  }
+
+  let urls = req.body.urls;
+  let results = [];
+
+  for (let url of urls) {
+    try {
+      const query = "site:" + url;
+      const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${query}`;
+
+      const response = await axios.get(searchUrl);
+      const searchResults = response.data.items || []; // Using '|| []' to ensure it defaults to an empty array if undefined
+
+      const isIndexed = searchResults.length > 0;
+
+      results.push({ url, isIndexed });
+      await sleep(1000);
+    } catch (error) {
+      // If you want to skip failed URLs, just continue to the next one
+      // Otherwise, you could push an error result or just return an error response
+      console.error(
+        `Failed to check indexed status for ${url}:`,
+        error.toString()
+      );
+      results.push({ url, isIndexed: false, error: error.toString() }); // Storing the error, but you can handle it as needed
+    }
+  }
+
+  res.json(results);
+});
+const placeUrl =
+  "https://www.google.com/maps/place/home+%C3%98sterbro+-+Ndr.+Frihavnsgade/@55.7033839,12.5832663,17z/data=!3m1!4b1!4m14!1m7!3m6!1s0x465252ef788d699f:0xc1043a1d567dedab!2sRealM%C3%A6glerne+%C3%98sterbro+ApS!8m2!3d55.7034093!4d12.5867607!16s%2Fg%2F11_tznt8d!3m5!1s0x465252ef86adb289:0x90bf1b890a697782!8m2!3d55.7033809!4d12.5858412!16s%2Fg%2F1tmg54hd?authuser=0&hl=dk&entry=ttu";
+
+async function scrollPage(page, scrollContainer) {
+  let lastHeight = await page.evaluate(
+    `document.querySelector("${scrollContainer}").scrollHeight`
+  );
+  while (true) {
+    await page.evaluate(
+      `document.querySelector("${scrollContainer}").scrollTo(0, document.querySelector("${scrollContainer}").scrollHeight)`
+    );
+    page.evaluate(() => {
+      var moreButtons = document.getElementsByClassName("w8nwRe kyuRq");
+
+      for (var i = 0; i < moreButtons.length; i++) {
+        moreButtons[i].click();
+      }
+    });
+    await page.waitForTimeout(2000);
+    let newHeight = await page.evaluate(
+      `document.querySelector("${scrollContainer}").scrollHeight`
+    );
+
+    if (newHeight === lastHeight) {
+      break;
+    }
+    lastHeight = newHeight;
+  }
+}
+
+async function getReviewsFromPage(page) {
+  const reviews = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll(".jftiEf")).map((el) => {
+      return {
+        user: {
+          name: el.querySelector(".d4r55")?.textContent.trim(),
+          link: el.querySelector(".WNxzHc a")?.getAttribute("href"),
+          thumbnail: el.querySelector(".NBa7we")?.getAttribute("src"),
+          localGuide:
+            el.querySelector(".RfnDt span:first-child")?.style.display ===
+            "none"
+              ? undefined
+              : true,
+          reviews: parseInt(
+            el
+              .querySelector(".RfnDt span:last-child")
+              ?.textContent.replace("·", "")
+          ),
+        },
+        rating: parseFloat(
+          el.querySelector(".kvMYJc")?.getAttribute("aria-label")
+        ),
+        date: el.querySelector(".rsqaWe")?.textContent.trim(),
+        snippet: el.querySelector(".MyEned")?.textContent.trim(),
+        likes: parseFloat(
+          el.querySelector(".GBkF3d:nth-child(2)")?.getAttribute("aria-label")
+        ),
+        images: Array.from(el.querySelectorAll(".KtCyie button")).length
+          ? Array.from(el.querySelectorAll(".KtCyie button")).map((el) => {
+              return {
+                thumbnail: getComputedStyle(el).backgroundImage.slice(5, -2),
+              };
+            })
+          : undefined,
+        date: el.querySelector(".rsqaWe")?.textContent.trim(),
+      };
+    });
+  });
+  return reviews;
+}
+
+async function fillPlaceInfo(page) {
+  const placeInfo = await page.evaluate(() => {
+    return {
+      title: document.querySelector(".DUwDvf").textContent.trim(),
+      address: document
+        .querySelector("button[data-item-id='address']")
+        ?.textContent.trim(), // data-item-id attribute may be different if the language is not English
+      rating: document
+        .querySelector("div.F7nice > span:first-child")
+        .textContent.trim(),
+      reviews: document
+        .querySelector(".HHrUdb")
+        .textContent.trim()
+        .split(" ")[0],
+    };
+  });
+  return placeInfo;
+}
+
+async function getLocalPlaceReviews() {
+  const browser = await puppeteer.launch({
+    headless: false,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+
+  const page = await browser.newPage();
+  page.setViewport({ width: 1200, height: 700 });
+
+  await page.setDefaultNavigationTimeout(60000);
+  await page.goto(placeUrl);
+  await page.waitForSelector(".DUwDvf");
+
+  const placeInfo = await fillPlaceInfo(page);
+
+  await page.click(".HHrUdb");
+  await page.waitForTimeout(5000);
+  await page.waitForSelector(".jftiEf");
+
+  await scrollPage(page, ".DxyBCb");
+
+  const reviews = await getReviewsFromPage(page);
+
+  await browser.close();
+
+  return { placeInfo, reviews };
+}
+
+getLocalPlaceReviews().then((result) => console.dir(result, { depth: null }));
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });

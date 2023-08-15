@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title><%= title %></title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/nprogress@0.2.0/nprogress.css" />
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <link rel="stylesheet" type="text/css" href="/styles/title-tag-style.css" />
+    <style>
+      .text-container {
+        padding: 20px;
+        background-color: #f2f2f2;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+      }
+
+      .text-container h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .text-container p {
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      /* Styles for the table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid #dddddd;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 8px;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+      #antal-urls {
+        font-size: 2em; /* Larger text size for emphasis */
+        color: #2980b9; /* Modern blue */
+        margin-bottom: 20px;
+        border-bottom: 2px solid #2980b9;
+        display: inline-block;
+        padding: 5px 10px;
+      }
+
+      #antal-index {
+        font-size: 2em;
+        color: #27ae60; /* Modern green */
+        margin-bottom: 20px;
+        border-bottom: 2px solid #27ae60;
+        display: inline-block;
+        padding: 5px 10px;
+      }
+
+      #antal-no-index {
+        font-size: 2em;
+        color: #c0392b; /* Modern red */
+        border-bottom: 2px solid #c0392b;
+        display: inline-block;
+        padding: 5px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <div class="tool-form">
+      <textarea
+        id="urls"
+        name="urls"
+        class="form-input"
+        placeholder="indsæt din liste af urls her.">
+      </textarea>
+      <button id="submit-button" class="form-button">Check urls</button>
+    </div>
+    <p id="antal-urls">0</p>
+    <p id="antal-index">0</p>
+    <p id="antal-no-index">0</p>
+
+    <button onclick="location.href='/'" class="back-button">Back</button>
+
+    <table id="url-results-table">
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Indexed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be populated by JavaScript -->
+      </tbody>
+    </table>
+    <div id="spinner"></div>
+
+    <script src="/js/url-index.js"></script>
+    <div id="google-reviews"></div>
+  </body>
+</html>

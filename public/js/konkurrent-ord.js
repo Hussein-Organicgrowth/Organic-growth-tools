@@ -13,9 +13,11 @@ async function searchAndScrape(query) {
 const table = document.getElementById("myTable");
 const tbody = table.querySelector("tbody");
 
+const gennemsnit = document.getElementById("gennemsnit");
 async function showTable(keyword) {
+  tbody.innerHTML = "";
   const data = await searchAndScrape(keyword);
-  let gennemsnit = 0;
+  let gennemsnitAntal = 0;
   data.forEach((element) => {
     const row = document.createElement("tr");
 
@@ -27,7 +29,7 @@ async function showTable(keyword) {
     positionCell.textContent = element.placering + 1;
     const wordCountCell = document.createElement("td");
     wordCountCell.textContent = element.wordCount;
-    gennemsnit += element.wordCount;
+    gennemsnitAntal += element.wordCount;
 
     // Append cells to the row
     row.appendChild(positionCell);
@@ -44,13 +46,14 @@ async function showTable(keyword) {
   const positionCell = document.createElement("td");
   positionCell.textContent = "";
   const wordCountCell = document.createElement("td");
-  wordCountCell.textContent = gennemsnit / 4;
+  wordCountCell.textContent = gennemsnitAntal / 4;
   row.appendChild(positionCell);
   row.appendChild(urlCell);
   row.appendChild(wordCountCell);
 
   // Append row to the table body
   tbody.appendChild(row);
+  gennemsnit.textContent = "Gennemsnitlige ord: " + gennemsnitAntal / 4;
 }
 
 const submitButton = document.getElementById("submit-button");
