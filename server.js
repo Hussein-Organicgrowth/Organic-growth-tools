@@ -486,7 +486,7 @@ async function getLocalPlaceReviews() {
   return { placeInfo, reviews };
 }
 
-getLocalPlaceReviews().then((result) => console.dir(result, { depth: null }));
+//getLocalPlaceReviews().then((result) => console.dir(result, { depth: null }));
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
