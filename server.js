@@ -225,11 +225,6 @@ const tools = [
     link: "/opdel-keyword",
   },
   {
-    name: "Definer købsfase eller søgeintention",
-    description: "Hjælper dig med at definer købsfase, og søgeintention",
-    link: "http://tool3.com",
-  },
-  {
     name: "Analyser kunde anmeldelser og kom med forslag til nye søgeord",
     description: "Anlyser kunde anmelder og kommer med forslag til søgeord",
     link: "/google-review-keywords",
