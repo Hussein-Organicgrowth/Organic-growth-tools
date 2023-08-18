@@ -488,9 +488,21 @@ async function getLocalPlaceReviews(placeUrl) {
 
   const page = await browser.newPage();
   page.setViewport({ width: 1200, height: 700 });
-
   await page.setDefaultNavigationTimeout(60000);
   await page.goto(placeUrl);
+  try {
+    // Waiting for the cookie banner to load
+    const acceptButton = await page.waitForSelector(
+      '[aria-label="Acceptér alle"]',
+      { timeout: 5000 }
+    );
+
+    if (acceptButton) {
+      await acceptButton.click();
+    }
+  } catch (e) {
+    console.log("Cookie banner not found or already accepted.");
+  }
   await page.waitForSelector(".DUwDvf");
 
   const placeInfo = await fillPlaceInfo(page);
