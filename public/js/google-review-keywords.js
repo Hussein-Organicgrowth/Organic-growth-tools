@@ -4,7 +4,7 @@ document
     const placeUrl = document.getElementById("placeUrl").value;
 
     try {
-      const response = await fetch("http://localhost:3000/getReviews", {
+      const response = await fetch("/getReviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
