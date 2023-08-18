@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Review Fetcher</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/styles/google-review-keywords.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Få søgeord fra anmeldelser</h1>
+      <div class="nav-buttons">
+        <button onclick="location.href='/'" id="backButton">Gå tilbage</button>
+      </div>
+      <p>
+        For at få anmeldelserne skal du gå ind på denne url:
+        https://www.google.com/maps/place
+      </p>
+      <p>
+        Skriv den virksomhed du gerne vil have anmeldelserne fra, og tryk på
+        "Hent anmeldelser"
+      </p>
+      <p>
+        Et nyt chrome vindue vil åbne, og du skal bare trykke accept på cookies.
+        Når du har gjort det så arbejder programmet med at hente anmeldelserne
+      </p>
+
+      <div class="url-input">
+        <input type="url" id="placeUrl" placeholder="Enter place URL..." />
+        <button id="fetchReviewsBtn">Hent anmeldelser</button>
+      </div>
+      <div class="review-textarea">
+        <textarea
+          id="reviewTextArea"
+          rows="10"
+          cols="50"
+          placeholder="Enter or view review data here..."></textarea>
+      </div>
+      <table id="reviewsTable">
+        <thead>
+          <tr>
+            <th>Navn</th>
+            <th>Anmeldelser</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Reviews will be populated here -->
+        </tbody>
+      </table>
+    </div>
+    <script src="/js/google-review-keywords.js"></script>
+  </body>
+</html>

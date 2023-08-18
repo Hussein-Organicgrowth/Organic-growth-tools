@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnPage Tool</title>
+    <link
+      href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+      rel="stylesheet" />
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <style>
+      /* Basic resets */
+      body,
+      h2,
+      p {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f3f4f6;
+        color: #333;
+      }
+      .nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px; /* Spacing between button and heading */
+      }
+
+      #backButton {
+        padding: 6px 12px;
+        background-color: transparent;
+        color: #007bff;
+        border: 1px solid #007bff;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      #backButton:hover {
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      /* Main container */
+      .container {
+        max-width: 800px;
+        margin: 40px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        padding: 10px 0;
+        border-bottom: 1px solid #e4e4e4;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #e4e4e4;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      button {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Table Styles */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid #e4e4e4;
+      }
+
+      th {
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+      .own-website {
+        background-color: #d4edda; /* A light green color. Adjust if needed. */
+      }
+      .review-textarea {
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+
+      #reviewTextArea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        font-size: 1rem;
+        resize: vertical; /* Allows only vertical resizing */
+        transition: border-color 0.3s;
+      }
+
+      #reviewTextArea:focus {
+        border-color: #007bff; /* Gives a hint of focus with a different border color */
+        outline: none;
+      }
+      .bold-text {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Enter Details</h2>
+      <div class="nav-buttons">
+        <button onclick="location.href='/'" id="backButton">Gå tilbage</button>
+      </div>
+      <label for="url">URL:</label>
+      <input type="url" id="url" placeholder="https://example.com" />
+
+      <label for="keyword">Keyword:</label>
+      <input type="text" id="keyword" placeholder="Enter keyword" />
+
+      <label for="placering">Hvad er din nuværende placering</label>
+      <input type="text" id="placering" placeholder="Enter placering" />
+      <button onclick="fetchData()">Fetch Data</button>
+
+      <textarea
+        id="reviewTextArea"
+        name="message"
+        rows="15"
+        placeholder="Dit output"></textarea>
+    </div>
+    <h2>Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Status Code</th>
+          <th>URL</th>
+          <th>Internal Links</th>
+          <th>Placering</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>H1</th>
+          <th>H2 Count</th>
+          <th>H3 Count</th>
+          <th>Robots</th>
+          <th>Canonical</th>
+          <th>Word Count</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody">
+        <!-- Results will populate here -->
+      </tbody>
+    </table>
+
+    <script>
+      async function fetchData() {
+        // Step 1: Fetch your own website details
+        const ownUrl = document.getElementById("url").value;
+        const placering = document.getElementById("placering").value;
+
+        try {
+          const ownDataResponse = await fetch(
+            `/scrape-konkurrent?url=${ownUrl}&placering=${placering}`
+          );
+          const ownData = await ownDataResponse.json();
+
+          // Add a flag to indicate it's the user's own website
+          ownData.isOwnWebsite = true;
+
+          // Step 2: Fetch competitor data
+          const keyword = document.getElementById("keyword").value;
+          const competitorsResponse = await fetch(`/search?q=${keyword}`);
+          const competitorsData = await competitorsResponse.json();
+
+          // Combine your own website data with competitors
+          const allData = [ownData].concat(competitorsData);
+          populateResults(allData, keyword);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      function populateResults(data, keyword) {
+        const resultsBody = document.getElementById("resultsBody");
+        resultsBody.innerHTML = ""; // Clear previous results
+
+        data.forEach((item) => {
+          let displayUrl = item.isOwnWebsite ? `${item.urlText}` : item.urlText;
+          let placering = item.isOwnWebsite
+            ? item.placering
+            : item.placering + 1;
+
+          const row = `
+            <tr ${item.isOwnWebsite ? 'class="own-website"' : ""}>
+                <td>${item.statusCode}</td>
+                <td>${item.urlText}</td>
+                <td>${item.internalLinks}</td>
+                <td>${placering}</td>
+                <td>${item.title}</td>
+                <td>${item.description}</td>
+                <td>${item.h1}</td>
+                <td>${item.h2Count}</td>
+                <td>${item.h3Count}</td>
+                <td>${item.robots}</td>
+                <td>${item.canonical}</td>
+                <td>${item.wordCount}</td>
+            </tr>
+        `;
+
+          resultsBody.innerHTML += row;
+        });
+
+        let convertToArray = convertToReadableArray(data);
+        generateKeywordsFromReviews(convertToArray.toString(), keyword);
+      }
+
+      function convertToReadableArray(data) {
+        const resultArray = [];
+        data.forEach((item) => {
+          if (item.isOwnWebsite) {
+            resultArray.push("Min egen hjemmeside");
+          } else {
+            resultArray.push(
+              `Konkurrent: ` + item.isOwnWebsite
+                ? item.placering
+                : item.placering + 1
+            );
+          }
+
+          resultArray.push(`URL: ${item.urlText}`);
+          resultArray.push(`Internal: ${item.internalLinks}`);
+          resultArray.push(
+            `Placering: ${
+              item.isOwnWebsite ? item.placering : item.placering + 1
+            }`
+          );
+          resultArray.push(`Title: ${item.title}`);
+          resultArray.push(`Description: ${item.description}`);
+          resultArray.push(`H1: ${item.h1}`);
+          resultArray.push(`h2-count: ${item.h2Count}`);
+          resultArray.push(`h3-count: ${item.h3Count}`);
+          resultArray.push(`word-count: ${item.wordCount}`);
+        });
+
+        return resultArray;
+      }
+      const textArea = document.getElementById("reviewTextArea");
+      async function generateKeywordsFromReviews(data, keyword) {
+        //const snippets = data.reviews.map((review) => review.snippet);
+
+        let prompt =
+          "Picture yourself as a seasoned SEO maestro, possessing in-depth knowledge of every nuance in search engine optimization. You are about to receive a comprehensive set of on-page data related to my personal website. Given this data and your vast expertise, your mission is to meticulously analyze the information and juxtapose it against the competitive landscape. Formulate a strategy, laid out in a clear, reader-friendly format, offering concrete steps to elevate my website's rankings, particularly for the keyword '{keyword}'. It's crucial that your insights and recommendations are presented in an easy-to-understand manner, with a layout that ensures even individuals new to SEO can grasp the essentials. By focusing on the primary keyword '{keyword}', provide advice that will bolster my website's position over its competitors. Your reponse will be in danish and ONLY DANISH.";
+        prompt = prompt.replace("{keyword}", keyword);
+        try {
+          // Fetch the response from the OpenAI API with the signal from AbortController
+          const response = await fetch("/process-text", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              titlePrompt: prompt,
+              prompt: data,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("An error occurred");
+          }
+
+          // Read the response as a stream of data
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder("utf-8");
+          //textArea.innerText = "";
+
+          let buffer = "";
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              break;
+            }
+
+            buffer += decoder.decode(value);
+
+            while (buffer.includes("\n")) {
+              const newlineIndex = buffer.indexOf("\n");
+              const line = buffer.slice(0, newlineIndex);
+              buffer = buffer.slice(newlineIndex + 1);
+
+              if (line.trim()) {
+                const jsonLine = line.replace(/^data: /, "").trim();
+                try {
+                  const parsedData = JSON.parse(jsonLine);
+                  const content = parsedData.choices[0].delta.content;
+
+                  if (typeof content !== "undefined") {
+                    textArea.value += content;
+                  }
+                } catch (error) {
+                  console.error("Error parsing JSON:", error);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          // Handle fetch request errors
+          if (signal.aborted) {
+            textArea.innerText = "Request aborted.";
+          } else {
+            console.error("Error:", error);
+            textArea.innerText = "Error occurred while generating.";
+          }
+        } finally {
+          // Enable the generate button and disable the stop button
+          controller = null; // Reset the AbortController instance
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -124,7 +124,7 @@ async function scrapeCompetition(url, index) {
 
     // Load the HTML content into cheerio
     const $ = cheerio.load(response.data);
-
+    let internalLinks = 0;
     $("script, style").remove();
     $("*")
       .contents()
@@ -133,6 +133,16 @@ async function scrapeCompetition(url, index) {
           $(node).remove();
         }
       });
+
+    $("a").each((index, element) => {
+      const href = $(element).attr("href");
+
+      // Check if the link is internal:
+      // This can be more complex depending on what you define as an internal link.
+      if (href && (href.startsWith("/") || href.startsWith(url))) {
+        internalLinks++;
+      }
+    });
 
     // Extract the values you need using CSS selectors
     let textContent = $("body").text();
@@ -162,6 +172,7 @@ async function scrapeCompetition(url, index) {
     return {
       statusCode,
       urlText,
+      internalLinks,
       placering,
       title,
       description,
@@ -179,6 +190,18 @@ async function scrapeCompetition(url, index) {
     throw new Error("Failed to scrape competition");
   }
 }
+
+app.get("/scrape-konkurrent", async (req, res) => {
+  const url = req.query.url;
+  const placering = req.query.placering;
+
+  try {
+    const data = await scrapeCompetition(url, placering);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+});
 
 const tools = [
   {
@@ -203,42 +226,33 @@ const tools = [
   },
   {
     name: "Definer købsfase eller søgeintention",
-    description: "Hjælper dig med at opdele søgeord",
-    link: "http://tool3.com",
-  },
-  {
-    name: "Schema markup",
-    description: "Hjælper dig med at opdele søgeord",
+    description: "Hjælper dig med at definer købsfase, og søgeintention",
     link: "http://tool3.com",
   },
   {
     name: "Analyser kunde anmeldelser og kom med forslag til nye søgeord",
-    description: "Hjælper dig med at opdele søgeord",
-    link: "http://tool3.com",
-  },
-  {
-    name: "Analyser kunde anmeldelser og kom med forslag til nye USPer",
-    description: "Hjælper dig med at opdele søgeord",
-    link: "http://tool3.com",
+    description: "Anlyser kunde anmelder og kommer med forslag til søgeord",
+    link: "/google-review-keywords",
   },
   {
     name: "Check om liste med urls er indexeret",
-    description: "Hjælper dig med at opdele søgeord",
+    description: "Hjælper dig med at checke om liste med urls er indexeret",
     link: "/url-indexed-tool",
   },
   {
     name: "URL redirect mapping",
-    description: "Hjælper dig med at opdele søgeord",
+    description: "Hjælper dig med at lave url rediret mapping",
     link: "/url-redirect",
   },
   {
-    name: "Onpage konkurrentanalyse",
+    name: "OnPage konkurrentanalyse",
     description: "Hjælper dig med at opdele søgeord",
-    link: "http://tool3.com",
+    link: "/konkurrent-analyse",
   },
   {
     name: "Tekst Konkurrentanalyse",
-    description: "Hjælper dig med at opdele søgeord",
+    description:
+      "Hjælper dig med at komme med en gennemsnitlige antal ord som andre konkurrenter har",
     link: "/konkurrent-ord",
   },
 ];
@@ -294,6 +308,19 @@ app.get("/url-redirect", (req, res) => {
 app.get("/url-indexed-tool", (req, res) => {
   res.render("url-indexed-tool", {
     title: "url-indexed værktøj",
+    languages: langs.all(),
+  });
+});
+
+app.get("/google-review-keywords", (req, res) => {
+  res.render("google-review-keywords", {
+    title: "Google Review Keywords",
+    languages: langs.all(),
+  });
+});
+app.get("/konkurrent-analyse", (req, res) => {
+  res.render("konkurrent-analyse", {
+    title: "Konkurrent Analyse værktøj",
     languages: langs.all(),
   });
 });
@@ -368,8 +395,8 @@ app.post("/url-index", async (req, res) => {
 
   res.json(results);
 });
-const placeUrl =
-  "https://www.google.com/maps/place/home+%C3%98sterbro+-+Ndr.+Frihavnsgade/@55.7033839,12.5832663,17z/data=!3m1!4b1!4m14!1m7!3m6!1s0x465252ef788d699f:0xc1043a1d567dedab!2sRealM%C3%A6glerne+%C3%98sterbro+ApS!8m2!3d55.7034093!4d12.5867607!16s%2Fg%2F11_tznt8d!3m5!1s0x465252ef86adb289:0x90bf1b890a697782!8m2!3d55.7033809!4d12.5858412!16s%2Fg%2F1tmg54hd?authuser=0&hl=dk&entry=ttu";
+//const placeUrl =
+//  "https://www.google.com/maps/place/home+%C3%98sterbro+-+Ndr.+Frihavnsgade/@55.7033839,12.5832663,17z/data=!3m1!4b1!4m14!1m7!3m6!1s0x465252ef788d699f:0xc1043a1d567dedab!2sRealM%C3%A6glerne+%C3%98sterbro+ApS!8m2!3d55.7034093!4d12.5867607!16s%2Fg%2F11_tznt8d!3m5!1s0x465252ef86adb289:0x90bf1b890a697782!8m2!3d55.7033809!4d12.5858412!16s%2Fg%2F1tmg54hd?authuser=0&hl=dk&entry=ttu";
 
 async function scrollPage(page, scrollContainer) {
   let lastHeight = await page.evaluate(
@@ -458,7 +485,7 @@ async function fillPlaceInfo(page) {
   return placeInfo;
 }
 
-async function getLocalPlaceReviews() {
+async function getLocalPlaceReviews(placeUrl) {
   const browser = await puppeteer.launch({
     headless: false,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -485,6 +512,20 @@ async function getLocalPlaceReviews() {
 
   return { placeInfo, reviews };
 }
+
+app.post("/getReviews", async (req, res) => {
+  try {
+    const placeUrl = req.body.placeUrl;
+    if (!placeUrl) {
+      return res.status(400).json({ error: "Place URL not provided." });
+    }
+
+    const data = await getLocalPlaceReviews(placeUrl);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 //getLocalPlaceReviews().then((result) => console.dir(result, { depth: null }));
 app.listen(PORT, () => {
