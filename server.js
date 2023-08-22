@@ -482,7 +482,7 @@ async function fillPlaceInfo(page) {
 
 async function getLocalPlaceReviews(placeUrl) {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
     executablePath:
       process.env.NODE_ENV === "production"
