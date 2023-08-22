@@ -482,15 +482,13 @@ async function fillPlaceInfo(page) {
 
 async function getLocalPlaceReviews(placeUrl) {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
     executablePath:
       process.env.NODE_ENV === "production"
         ? process.env.PUPPETEER_EXECUTABLE_PATH
         : puppeteer.executablePath(),
   });
-
-  console.log("PLACEURL: " + placeUrl);
 
   const page = await browser.newPage();
   page.setViewport({ width: 1200, height: 700 });
@@ -500,7 +498,7 @@ async function getLocalPlaceReviews(placeUrl) {
     // Waiting for the cookie banner to load
     const acceptButton = await page.waitForSelector(
       '[aria-label="Acceptér alle"]',
-      { timeout: 10000 }
+      { timeout: 50000 }
     );
 
     if (acceptButton) {
@@ -533,7 +531,13 @@ app.post("/getReviews", async (req, res) => {
     if (!placeUrl) {
       return res.status(400).json({ error: "Place URL not provided." });
     }
-    console.log("Launching browser...");
+    console.log("NODE_ENV:", process.env.NODE_ENV);
+    console.log(
+      "PUPPETEER_EXECUTABLE_PATH:",
+      process.env.PUPPETEER_EXECUTABLE_PATH
+    );
+    console.log("Default Path:", puppeteer.executablePath());
+
     const data = await getLocalPlaceReviews(placeUrl);
     res.json(data);
   } catch (error) {
