@@ -495,21 +495,23 @@ async function getLocalPlaceReviews(placeUrl) {
   page.setViewport({ width: 1200, height: 700 });
   await page.setDefaultNavigationTimeout(60000);
   await page.goto(placeUrl);
-  const content = await page.content();
-  console.log(content);
   await page.screenshot({
     path: "path_to_screenshots_directory/screenshot.png",
   });
 
   try {
     // Waiting for the cookie banner to load
-    const acceptButton = await page.waitForSelector(
-      '[aria-label="Acceptér alle"]',
-      { timeout: 50000 }
-    );
+    const buttonText =
+      process.env.NODE_ENV === "production"
+        ? '[aria-label="Alle akzeptieren"]'
+        : '[aria-label="Acceptér alle"]';
+    const acceptButton = await page.waitForSelector(buttonText, {
+      timeout: 50000,
+    });
 
     if (acceptButton) {
       await acceptButton.click();
+      console.log("CLICKED BUTTON");
     }
   } catch (e) {
     console.log("Cookie banner not found or already accepted.");
