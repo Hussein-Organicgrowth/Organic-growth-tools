@@ -495,7 +495,9 @@ async function getLocalPlaceReviews(placeUrl) {
   page.setViewport({ width: 1200, height: 700 });
   await page.setDefaultNavigationTimeout(60000);
   await page.goto(placeUrl);
-  await page.screenshot({ path: "screenshot.png" });
+  await page.screenshot({
+    path: "path_to_screenshots_directory/screenshot.png",
+  });
 
   try {
     // Waiting for the cookie banner to load
