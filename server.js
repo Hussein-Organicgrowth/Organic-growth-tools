@@ -19,17 +19,9 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
 puppeteer.use(StealthPlugin());
 
-// Server-side code
-const serveIndex = require("serve-index");
-
 const fetch = require("node-fetch");
 
 app.use(express.json());
-app.use(
-  "/screenshots",
-  express.static("path_to_screenshots_directory"),
-  serveIndex("path_to_screenshots_directory", { icons: true })
-);
 
 app.post("/process-text", async (req, res) => {
   try {
@@ -500,9 +492,6 @@ async function getLocalPlaceReviews(placeUrl) {
   page.setViewport({ width: 1200, height: 700 });
   await page.setDefaultNavigationTimeout(60000);
   await page.goto(placeUrl);
-  const screenshotPath = "path_to_screenshots_directory/screenshot.png";
-  await page.screenshot({ path: screenshotPath });
-  console.log(`Screenshot saved to: ${screenshotPath}`);
   try {
     // Waiting for the cookie banner to load
     const buttonText =
