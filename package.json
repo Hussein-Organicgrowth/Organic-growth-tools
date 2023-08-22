@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "if ! [ -d node_modules/puppeteer ]; then echo 'Puppeteer not found!'; exit 1; fi"
   },
   "keywords": [
     "tool",
