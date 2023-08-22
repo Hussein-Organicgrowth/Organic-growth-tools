@@ -495,6 +495,8 @@ async function getLocalPlaceReviews(placeUrl) {
   page.setViewport({ width: 1200, height: 700 });
   await page.setDefaultNavigationTimeout(60000);
   await page.goto(placeUrl);
+  const content = await page.content();
+  console.log(content);
   await page.screenshot({
     path: "path_to_screenshots_directory/screenshot.png",
   });
