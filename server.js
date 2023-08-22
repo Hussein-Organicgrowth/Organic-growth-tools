@@ -490,6 +490,8 @@ async function getLocalPlaceReviews(placeUrl) {
         : puppeteer.executablePath(),
   });
 
+  console.log("PLACEURL: " + placeUrl);
+
   const page = await browser.newPage();
   page.setViewport({ width: 1200, height: 700 });
   await page.setDefaultNavigationTimeout(60000);
@@ -498,7 +500,7 @@ async function getLocalPlaceReviews(placeUrl) {
     // Waiting for the cookie banner to load
     const acceptButton = await page.waitForSelector(
       '[aria-label="Acceptér alle"]',
-      { timeout: 5000 }
+      { timeout: 10000 }
     );
 
     if (acceptButton) {
@@ -507,6 +509,7 @@ async function getLocalPlaceReviews(placeUrl) {
   } catch (e) {
     console.log("Cookie banner not found or already accepted.");
   }
+
   await page.waitForSelector(".DUwDvf");
 
   const placeInfo = await fillPlaceInfo(page);
@@ -530,7 +533,7 @@ app.post("/getReviews", async (req, res) => {
     if (!placeUrl) {
       return res.status(400).json({ error: "Place URL not provided." });
     }
-
+    console.log("Launching browser...");
     const data = await getLocalPlaceReviews(placeUrl);
     res.json(data);
   } catch (error) {
