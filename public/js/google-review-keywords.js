@@ -2,7 +2,7 @@ document
   .getElementById("fetchReviewsBtn")
   .addEventListener("click", async () => {
     const placeUrl = document.getElementById("placeUrl").value;
-
+    JsLoadingOverlay.show();
     try {
       const response = await fetch("/getReviews", {
         method: "POST",
@@ -116,4 +116,5 @@ function populateTable(reviews) {
         `;
     tbody.appendChild(tr);
   });
+  JsLoadingOverlay.hide();
 }
