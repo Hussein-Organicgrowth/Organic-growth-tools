@@ -20,6 +20,7 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 
 // Server-side code
+const serveIndex = require("serve-index");
 
 const fetch = require("node-fetch");
 
