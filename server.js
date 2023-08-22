@@ -500,9 +500,12 @@ async function getLocalPlaceReviews(placeUrl) {
       process.env.NODE_ENV === "production"
         ? '[aria-label="Alle akzeptieren"]'
         : '[aria-label="Acceptér alle"]';
-    const acceptButton = await page.waitForSelector(buttonText, {
-      timeout: 50000,
-    });
+    const acceptButton = await page.waitForSelector(
+      '[aria-label="Acceptér alle"]',
+      {
+        timeout: 50000,
+      }
+    );
 
     if (acceptButton) {
       await acceptButton.click();
