@@ -492,6 +492,8 @@ async function getLocalPlaceReviews(placeUrl) {
   page.setViewport({ width: 1200, height: 700 });
   await page.setDefaultNavigationTimeout(60000);
   await page.goto(placeUrl + "&hl=da");
+  const content = await page.content();
+  console.log(content);
   try {
     // Waiting for the cookie banner to load
     const buttonText =
