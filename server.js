@@ -24,6 +24,7 @@ puppeteer.use(StealthPlugin());
 const fetch = require("node-fetch");
 
 app.use(express.json());
+app.use("/screenshots", express.static("path_to_screenshots_directory"));
 
 app.post("/process-text", async (req, res) => {
   try {
@@ -494,6 +495,8 @@ async function getLocalPlaceReviews(placeUrl) {
   page.setViewport({ width: 1200, height: 700 });
   await page.setDefaultNavigationTimeout(60000);
   await page.goto(placeUrl);
+  await page.screenshot({ path: "screenshot.png" });
+
   try {
     // Waiting for the cookie banner to load
     const acceptButton = await page.waitForSelector(
