@@ -16,6 +16,7 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const openaiTokenCounter = require("openai-gpt-token-counter");
 
 puppeteer.use(StealthPlugin());
 
@@ -23,9 +24,88 @@ const fetch = require("node-fetch");
 
 app.use(express.json());
 
+async function getEmbedding(text) {
+  const endpoint = "https://api.openai.com/v1/embeddings";
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${API_KEY}`,
+  };
+  const data = {
+    input: text,
+    model: "text-embedding-ada-002",
+  };
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(data),
+  });
+
+  const responseBody = await response.json();
+  return responseBody.data[0].embedding;
+}
+
+function getAmountOfTokens(text) {
+  const tokenCount = openaiTokenCounter.text(text, "gpt-4");
+  return tokenCount;
+}
+
+async function summarizeText(text) {
+  // Use the appropriate endpoint // Replace with your API key
+
+  const prompt = `Opsummer følgende tekst:\n\n${text}`;
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }], // Enable streaming response
+    }),
+  });
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+summarizeText(
+  "Google Translate er et gratis webbaseret program til maskinoversættelse. Google Oversæt blev lavet af forskergruppen hos Google og oprindelig lanceret i april 2006. Der kan pr. oktober 2021 oversættes til og fra 109 sprog. Ifølge Google selv har tjenesten verden over mere end 500 millioner brugere dagligt"
+);
+
+function splitTextIntoChunks(text, chunkSize) {
+  const words = text.split(" ");
+  const chunks = [];
+
+  while (words.length) {
+    let chunk = "";
+    while (chunk.split(" ").length < chunkSize && words.length) {
+      chunk += " " + words.shift();
+    }
+    chunks.push(chunk.trim());
+  }
+
+  return chunks;
+}
+
 app.post("/process-text", async (req, res) => {
   try {
     const { titlePrompt, prompt } = req.body;
+
+    const tokenCount = getAmountOfTokens(prompt);
+    let summarizedText = "";
+    if (tokenCount > 4000) {
+      const chunks = splitTextIntoChunks(prompt, 200);
+      // console.log("CHUNKS " + summarizeText(chunks));
+      const summarizedChunks = await Promise.all(
+        chunks.map((chunk) => summarizeText(chunk))
+      );
+      summarizedText = summarizedChunks.join(" ");
+    }
+
+    const sidstePrompt = tokenCount > 4000 ? summarizedText : prompt;
 
     // Fetch the response from the OpenAI API
     const response = await fetch(API_URL, {
@@ -38,7 +118,7 @@ app.post("/process-text", async (req, res) => {
         model: "gpt-4",
         messages: [
           { role: "system", content: titlePrompt },
-          { role: "user", content: prompt },
+          { role: "user", content: sidstePrompt },
         ],
         max_tokens: 5000,
         stream: true, // Enable streaming response
@@ -493,7 +573,6 @@ async function getLocalPlaceReviews(placeUrl) {
   await page.setDefaultNavigationTimeout(60000);
   await page.goto(placeUrl + "&hl=da");
   const content = await page.content();
-  console.log(content);
   try {
     // Waiting for the cookie banner to load
     const buttonText =

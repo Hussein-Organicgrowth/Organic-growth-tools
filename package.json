@@ -27,10 +27,12 @@
     "langs": "^2.0.0",
     "node-fetch": "^2.6.6",
     "openai": "^3.3.0",
+    "openai-gpt-token-counter": "^1.1.0",
     "puppeteer": "^21.1.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "serve-index": "^1.9.1"
+    "serve-index": "^1.9.1",
+    "tiktoken": "^1.0.10"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
