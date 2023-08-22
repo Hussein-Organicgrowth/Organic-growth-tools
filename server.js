@@ -531,12 +531,6 @@ app.post("/getReviews", async (req, res) => {
     if (!placeUrl) {
       return res.status(400).json({ error: "Place URL not provided." });
     }
-    console.log("NODE_ENV:", process.env.NODE_ENV);
-    console.log(
-      "PUPPETEER_EXECUTABLE_PATH:",
-      process.env.PUPPETEER_EXECUTABLE_PATH
-    );
-    console.log("Default Path:", puppeteer.executablePath());
 
     const data = await getLocalPlaceReviews(placeUrl);
     res.json(data);
