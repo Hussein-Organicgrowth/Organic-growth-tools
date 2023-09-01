@@ -17,12 +17,132 @@ const cheerio = require("cheerio");
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const openaiTokenCounter = require("openai-gpt-token-counter");
+const sitemaps = require("sitemap-stream-parser");
+
+const xml2js = require("xml2js");
 
 puppeteer.use(StealthPlugin());
 
 const fetch = require("node-fetch");
 
 app.use(express.json());
+
+async function fetchAndParseXml(url) {
+  const response = await fetch(url);
+  const text = await response.text();
+  const parser = new xml2js.Parser();
+  return parser.parseStringPromise(text);
+}
+
+async function extractSitemapUrls(sitemapUrl) {
+  const parsed = await fetchAndParseXml(sitemapUrl);
+  console.log("PARSED: " + parsed.sitemapindex);
+  let urls = [];
+  if (parsed.sitemapindex && parsed.sitemapindex.sitemap) {
+    for (let sitemap of parsed.sitemapindex.sitemap) {
+      if (sitemap.loc && sitemap.loc[0]) {
+        urls.push(sitemap.loc[0]);
+      }
+    }
+  }
+  return urls;
+}
+
+async function extractSiteUrls(sitemapUrl) {
+  const parsed = await fetchAndParseXml(sitemapUrl);
+  let urls = [];
+  if (parsed.urlset && parsed.urlset.url) {
+    for (let url of parsed.urlset.url) {
+      if (url.loc && url.loc[0]) {
+        urls.push(url.loc[0]);
+      }
+    }
+  }
+  return urls;
+}
+
+async function fetchAllUrlsFromSitemapIndex(sitemapIndexUrl) {
+  const sitemapUrls = await extractSitemapUrls(sitemapIndexUrl);
+  let allUrls = [];
+  console.log("SITEMAP URLS: " + sitemapUrls);
+  for (let sitemapUrl of sitemapUrls) {
+    const siteUrls = await extractSiteUrls(sitemapUrl);
+    allUrls = allUrls.concat(siteUrls);
+    console.log("SITE URLS: " + siteUrls);
+  }
+
+  return allUrls;
+}
+
+function collectUrlsFromSitemaps(sitemapIndexUrl) {
+  return new Promise((resolve, reject) => {
+    let allUrls = [];
+
+    sitemaps.parseSitemaps(
+      sitemapIndexUrl,
+      function (url) {
+        allUrls.push(url);
+      },
+      function (err, sitemaps) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(allUrls);
+        }
+      }
+    );
+  });
+}
+function collectUrlsFromSitemaps(urls) {
+  return new Promise((resolve, reject) => {
+    let allUrls = [];
+
+    sitemaps.parseSitemaps(
+      urls,
+      function (url) {
+        allUrls.push(url);
+      },
+      function (err, sitemaps) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(allUrls);
+        }
+      }
+    );
+  });
+}
+
+app.post("/scrape-meta-data", async (req, res) => {
+  const sitemapIndexUrl = req.body.sitemapURL;
+
+  try {
+    const urls = await collectUrlsFromSitemaps(sitemapIndexUrl);
+
+    res.json({ urls });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch URLs" });
+  }
+});
+
+app.post("/fetch-meta-details", async (req, res) => {
+  const { url } = req.body;
+
+  try {
+    const response = await axios.get(url);
+    const $ = cheerio.load(response.data);
+
+    const title =
+      $("title").text() === "undefined" ? "Ingen title" : $("title").text();
+    const metaDescription =
+      $('meta[name="description"]').attr("content") === "undefined"
+        ? "Ingen meta description"
+        : $('meta[name="description"]').attr("content");
+    res.json({ title, metaDescription });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch meta details" });
+  }
+});
 
 async function getEmbedding(text) {
   const endpoint = "https://api.openai.com/v1/embeddings";
@@ -71,10 +191,6 @@ async function summarizeText(text) {
   return data.choices[0].message.content;
 }
 
-summarizeText(
-  "Google Translate er et gratis webbaseret program til maskinoversættelse. Google Oversæt blev lavet af forskergruppen hos Google og oprindelig lanceret i april 2006. Der kan pr. oktober 2021 oversættes til og fra 109 sprog. Ifølge Google selv har tjenesten verden over mere end 500 millioner brugere dagligt"
-);
-
 function splitTextIntoChunks(text, chunkSize) {
   const words = text.split(" ");
   const chunks = [];
@@ -96,8 +212,8 @@ app.post("/process-text", async (req, res) => {
 
     const tokenCount = getAmountOfTokens(prompt);
     let summarizedText = "";
-    if (tokenCount > 4000) {
-      const chunks = splitTextIntoChunks(prompt, 200);
+    if (tokenCount > 3400) {
+      const chunks = splitTextIntoChunks(prompt, 400);
       // console.log("CHUNKS " + summarizeText(chunks));
       const summarizedChunks = await Promise.all(
         chunks.map((chunk) => summarizeText(chunk))
@@ -328,6 +444,11 @@ const tools = [
       "Hjælper dig med at komme med en gennemsnitlige antal ord som andre konkurrenter har",
     link: "/konkurrent-ord",
   },
+  {
+    name: "Scrape meta data fra sitemap",
+    description: "scraper alle page titles og meta beskrivelser",
+    link: "/scrape-meta-data",
+  },
 ];
 
 app.get("/", (req, res) => {
@@ -394,6 +515,12 @@ app.get("/google-review-keywords", (req, res) => {
 app.get("/konkurrent-analyse", (req, res) => {
   res.render("konkurrent-analyse", {
     title: "Konkurrent Analyse værktøj",
+    languages: langs.all(),
+  });
+});
+app.get("/scrape-meta-data", (req, res) => {
+  res.render("scrape-metadata", {
+    title: "Scrape meta data fra sitemap",
     languages: langs.all(),
   });
 });

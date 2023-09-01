@@ -42,6 +42,8 @@ function toggleFullText() {
   }
 }
 
+console.log(scrapeWebsite("https://organicgrowth.dk/"));
+
 async function scrapeWebsite(url) {
   try {
     const response = await axios.get(`/scrape?url=${encodeURIComponent(url)}`);

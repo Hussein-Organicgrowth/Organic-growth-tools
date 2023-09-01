@@ -22,17 +22,22 @@
     "ejs": "^3.1.9",
     "env": "^0.0.2",
     "express": "^4.17.1",
+    "get-sitemap-links": "^1.1.0",
     "isomorphic-fetch": "^3.0.0",
+    "jquery": "^3.7.1",
     "jQuery": "^1.7.4",
+    "jsdom": "^22.1.0",
     "langs": "^2.0.0",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2.7.0",
     "openai": "^3.3.0",
     "openai-gpt-token-counter": "^1.1.0",
     "puppeteer": "^21.1.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "serve-index": "^1.9.1",
-    "tiktoken": "^1.0.10"
+    "sitemap-stream-parser": "^1.7.0",
+    "tiktoken": "^1.0.10",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
