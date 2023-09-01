@@ -1,5 +1,6 @@
 async function fetchUrls() {
   const sitemapUrl = document.getElementById("sitemapUrl").value;
+  console.log("SITEMAPURL: " + sitemapUrl);
   const response = await fetch("/scrape-meta-data", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
