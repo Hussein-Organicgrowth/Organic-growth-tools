@@ -80,7 +80,7 @@ async function generateMetabeskrivelse(text, lang) {
     "As such, it's essential that your meta description aligns well with the overall content and purpose of the website. " +
     "Remember, an effective meta description can significantly enhance the visibility and click-through rates of a website on search engine results pages, " +
     "so take your time to craft it carefully and thoughtfully. " +
-    "Now, please provide the target language and the text from which you'll craft a compelling, concise, and SEO-friendly meta description for the website.";
+    "Now, please provide the target language and the text from which you'll craft a compelling, concise, and SEO-friendly meta description for the website. ONLY HAVE A MAX OF 160 CHARACTERS IN THE META DESCRIPTION. ";
   try {
     // Fetch the response from the OpenAI API with the signal from AbortController
     const response = await fetch("/process-text", {

@@ -61,6 +61,111 @@ async function extractSiteUrls(sitemapUrl) {
   return urls;
 }
 
+async function findRankingForDomain(keyword, domain) {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+
+  await page.goto("https://www.google.com");
+
+  const content = await page.content();
+  try {
+    // Waiting for the cookie banner to load
+    const buttonText =
+      process.env.NODE_ENV === "production"
+        ? '[aria-label="Alle akzeptieren"]'
+        : '[aria-label="Acceptér alle"]';
+    await page.waitForSelector(".QS5gu.sy4vM"); // wait for the element to appear on the page
+    const acceptButton = await page.$x(
+      "//div[contains(@class, 'QS5gu') and contains(@class, 'sy4vM') and contains(text(), 'Acceptér alle')]"
+    );
+
+    if (acceptButton.length > 0) {
+      await acceptButton[0].click();
+    }
+
+    await page.waitForSelector("textarea[name=q]");
+
+    await page.type("textarea[name=q]", keyword);
+    await page.keyboard.press("Enter");
+
+    // Wait for search results to load
+    await page.waitForSelector("#search");
+
+    let found = false;
+    let pageNum = 1;
+    const maxPagesToSearch = 100; // set a limit to how many pages to search through
+    let pageTal = 1;
+    let linkArray = [];
+    while (!found && pageNum <= maxPagesToSearch) {
+      const links = await page.$$eval("h3", (links) =>
+        links.map((link) => link.parentElement.href)
+      );
+
+      for (let i = 0; i < links.length; i++) {
+        if (links[i].includes(domain)) {
+          found = true;
+          linkArray.push(links[i]);
+          console.log("LinkArray: " + linkArray);
+          const position = linkArray.indexOf(domain);
+          console.log(
+            `Found ${domain} at position ${position} on page ${pageNum}`
+          );
+          break;
+        }
+      }
+
+      if (!found) {
+        pageTal++;
+        let pageString = "Page " + pageTal;
+        const nextPageLink = await page.$(`a[aria-label="${pageString}"].fl`);
+        console.log("NEXTPAGELINK: " + nextPageLink);
+
+        if (nextPageLink) {
+          await nextPageLink.click();
+          await page.waitForSelector("#search"); // Ensure the results are loaded
+          pageNum++;
+        } else {
+          let moreResultsButton;
+          for (let i = 0; i < 25; i++) {
+            // try scrolling 5 times or adjust as necessary
+            await page.evaluate(() => {
+              window.scrollBy(0, window.innerHeight / 2); // scroll half the viewport height
+            });
+
+            await page.waitForTimeout(1000); // Wait a bit for potential dynamic content to load
+
+            moreResultsButton = await page.$("a.T7sFge.sW9g3e.VknLRd");
+            if (moreResultsButton) break; // exit loop once button is found
+          }
+
+          if (moreResultsButton) {
+            await moreResultsButton.click();
+            await page.waitForSelector("#search"); // Ensure the results are loaded
+            pageNum++;
+          } else {
+            break; // No more results or pages to show after trying to scroll
+          }
+        }
+      }
+    }
+
+    if (!found) {
+      console.log(
+        `${domain} was not found in the top ${
+          pageNum * 10
+        } results for the keyword "${keyword}".`
+      );
+    }
+
+    //await browser.close();
+  } catch (e) {
+    console.log("Cookie banner not found or already accepted.");
+  }
+  // Input the keyword into Google search and click the search button
+}
+
+//console.log(findRankingForDomain("cheap cars", "https://wgntv.com/"));
+
 async function fetchAllUrlsFromSitemapIndex(sitemapIndexUrl) {
   const sitemapUrls = await extractSitemapUrls(sitemapIndexUrl);
   let allUrls = [];
